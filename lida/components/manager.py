@@ -189,6 +189,7 @@ class Manager(object):
         self,
         summary,
         goal,
+        data = None,
         textgen_config: TextGenerationConfig = TextGenerationConfig(),
         library="seaborn",
         return_error: bool = False,
@@ -198,13 +199,17 @@ class Manager(object):
         if isinstance(goal, str):
             goal = Goal(question=goal, visualization=goal, rationale="")
 
+        # Maintain backwards compatibility, must call summarize before visualize if data isn't passed as param
+        if data is None:
+            data = self.data
+
         self.check_textgen(config=textgen_config)
         code_specs = self.vizgen.generate(
             summary=summary, goal=goal, textgen_config=textgen_config, text_gen=self.text_gen,
             library=library)
         charts = self.execute(
             code_specs=code_specs,
-            data=self.data,
+            data=data,
             summary=summary,
             library=library,
             return_error=return_error,
